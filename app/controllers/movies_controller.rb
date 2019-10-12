@@ -11,7 +11,17 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+    sort = params[:sort]
+    css_highlight = "hilite bg-warning"
+    if sort == "title"
+      @movies = Movie.order(:title)
+      @highlight_title = css_highlight
+    elsif sort == "release_date"
+      @movies = Movie.order(:release_date)
+      @highlight_release_date = css_highlight
+    else
+      @movies = Movie.all
+    end
   end
 
   def new
