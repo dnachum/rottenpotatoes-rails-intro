@@ -13,9 +13,21 @@ class MoviesController < ApplicationController
   def index
     # get a list of values of ratings
     @all_ratings = Movie.all_ratings
-    @ratings = params[:ratings] || Hash[@all_ratings.map{ |rating| [rating, true]}]
+
+    # if params is empty then populate it with either the session or check all
+    if params[:ratings].nil? || params[:ratings].empty?
+      params[:ratings] = session[:ratings] || Hash[@all_ratings.map{ |rating| [rating, true]}]
+      flash.keep
+      redirect_to movies_path(params)
+    end
+
+    # update the session ratings
+    session[:ratings] = params[:ratings]
+    @ratings = session[:ratings]
+
     # determine which columns need to be sorted if any
-    sort = params[:sort]
+    session[:sort] =  params[:sort] || session[:sort]
+    sort = session[:sort]
     css_highlight = "hilite bg-warning"
 
     # get movies that pass the filter
